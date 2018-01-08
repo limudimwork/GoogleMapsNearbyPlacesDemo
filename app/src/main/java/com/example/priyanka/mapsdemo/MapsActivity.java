@@ -34,6 +34,31 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.List;
 
+//IMPLEMENTED INTERFACES
+   /*
+OnMapReadyCallback
+ Callback interface for when the map is ready to be used.
+Once an instance of this interface is set on a MapFragment or MapView object,
+ the onMapReady(GoogleMap) method is triggered when the map is ready to be used
+ and provides a non-null instance of GoogleMap.
+     */
+
+   /*
+   GoogleApiClient.ConnectionCallbacks
+   calls  method onConnected(Bundle)  when device connected.
+    */
+
+   /*
+   GoogleApiClient.OnConnectionFailedListener
+  calls method onConnectionFailed(ConnectionResult connectionResult); when device disconnected
+    */
+
+   /*
+   LocationListener
+   Used for receiving notifications from the LocationManager when the location has changed.
+   calls method onLocationChanged(Location location);
+    */
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
 GoogleApiClient.OnConnectionFailedListener,
@@ -53,14 +78,14 @@ LocationListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)//VERSION_CODES.M = Android 6.0    we check if our minimum sdk greater or equal to 6.0 (this when runtime permissions first took place)
         {
             checkLocationPermission();
 
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.map);//"map" is id of google's map fragment inserted into "activity_maps" xml
         mapFragment.getMapAsync(this);
     }
 
@@ -97,12 +122,13 @@ LocationListener{
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) {//Called when the map is ready to be used
         mMap = googleMap;
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             bulidGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
+            mMap.setMyLocationEnabled(true);//Enables or disables showing to  user their current position on the map
+            //  mMap.setMapType(GoogleMap.MAP_TYPE_ .... choose one of popped up  options); --> CHANGES MAP TYPE (hybrid,normal,satellite,terrain and etc ... )
         }
     }
 
@@ -121,20 +147,20 @@ LocationListener{
         lastlocation = location;
         if(currentLocationmMarker != null)
         {
-            currentLocationmMarker.remove();
+            currentLocationmMarker.remove();//if marker is occupied by previous location we freeing him by "remove" method
 
         }
         Log.d("lat = ",""+latitude);
         LatLng latLng = new LatLng(location.getLatitude() , location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
+        MarkerOptions markerOptions = new MarkerOptions();//SETTING NEW MARKER FOR NEW LOCATION
         markerOptions.position(latLng);
         markerOptions.title("Current Location");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));//marker icon .We chose blue color
         currentLocationmMarker = mMap.addMarker(markerOptions);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomBy(10));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));//moves camera to  new latlang's location
+        mMap.animateCamera(CameraUpdateFactory.zoomBy(10));//camera zoomed by 10
 
-        if(client != null)
+        if(client != null)//if client = null means there is no currently set location
         {
             LocationServices.FusedLocationApi.removeLocationUpdates(client,this);
         }
@@ -231,7 +257,7 @@ LocationListener{
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void onConnected(@Nullable Bundle bundle) {//called when device is connected
 
         locationRequest = new LocationRequest();
         locationRequest.setInterval(100);
@@ -246,7 +272,7 @@ LocationListener{
     }
 
 
-    public boolean checkLocationPermission()
+    public boolean checkLocationPermission()//CHECKS IF THERE IS NEED ON REQUESTING LOCATION PERMISSION FROM USER IN THE RUNTIME
     {
         if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)  != PackageManager.PERMISSION_GRANTED )
         {
